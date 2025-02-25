@@ -1,3 +1,0 @@
-# projeto-FS
-PROJETO FABRICA DE SOFTWARE
-
