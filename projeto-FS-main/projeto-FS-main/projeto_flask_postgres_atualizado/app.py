@@ -40,7 +40,7 @@ def cadastro():
             flash("Usuário criado com sucesso!", "success")
             return redirect(url_for('index'))
         except Exception as e:
-            flash("Erro ao criar usuário. Nome de usuário pode já existir.", "danger")
+            flash("Erro ao criar usuário.", "danger")
             print(e)
     return render_template('cadastro.html')
 
@@ -59,7 +59,7 @@ def login():
     if user:
         session['user_id'] = user[0]
         session['username'] = user[1]
-        return redirect(url_for('calendario'))
+        return redirect(url_for('tarefas'))
     else:
         flash("Login inválido!", "danger")
         return redirect(url_for('index'))
