@@ -44,7 +44,7 @@ def cadastro():
             print(e)
     return render_template('cadastro.html')
 
-@app.route('/inicio', methods=['POST'])
+@app.route('/login', methods=['POST'])
 def login():
     username = request.form['username']
     password = request.form['password']
