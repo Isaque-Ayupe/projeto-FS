@@ -1,0 +1,15 @@
+{
+	"nodes":[
+		{"id":"1d93b72cc7707f95","type":"file","file":"projeto_eng_fs/documentação/Projeto Fabrica de Software.md","x":-812,"y":-495,"width":400,"height":400},
+		{"id":"0213535c84246a43","type":"text","text":"\n[[Tecnologias]]","x":277,"y":-265,"width":250,"height":60},
+		{"id":"3c2e6a67b1a2bd0f","type":"text","text":"PROJETO GERENCIADOR DE TAREFAS\n\n","x":-155,"y":-235,"width":286,"height":95},
+		{"id":"450a022befb24c8b","type":"text","text":"[[UML.canvas|UML]]","x":-60,"y":-480,"width":250,"height":60},
+		{"id":"213aa0ea9e10cd79","type":"text","text":"[https://www.canva.com/design/DAGhhI-DMXg/enGnAgryRcmuW5g_SdAsvg/edit?utm_content=DAGhhI-DMXg&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton]()","x":240,"y":20,"width":250,"height":294}
+	],
+	"edges":[
+		{"id":"f10898d974f64292","fromNode":"3c2e6a67b1a2bd0f","fromSide":"right","toNode":"0213535c84246a43","toSide":"left"},
+		{"id":"cdee36d9d9539f34","fromNode":"3c2e6a67b1a2bd0f","fromSide":"top","toNode":"450a022befb24c8b","toSide":"bottom"},
+		{"id":"601622aee8b39b26","fromNode":"3c2e6a67b1a2bd0f","fromSide":"left","toNode":"1d93b72cc7707f95","toSide":"right"},
+		{"id":"8af81ec1aa99243a","fromNode":"3c2e6a67b1a2bd0f","fromSide":"bottom","toNode":"213aa0ea9e10cd79","toSide":"left"}
+	]
+}
