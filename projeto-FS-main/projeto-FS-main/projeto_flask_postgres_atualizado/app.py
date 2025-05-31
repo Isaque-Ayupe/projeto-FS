@@ -1,9 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 import pymysql
 
+#cria o app
 app = Flask(__name__)
 app.secret_key = 'segredo_ultra_confidencial'
 
+#conexao com banco de dados
 def get_db_connection():
     return pymysql.connect(
         database="gerenciado_de_tarefas",
@@ -11,13 +13,15 @@ def get_db_connection():
         password="1234",
         host="localhost",
         port=3306,
-        cursorclass=pymysql.cursors.Cursor
+        cursorclass=pymysql.cursors.Cursor # type: ignore
     )
 
+#renderiza a tela de login
 @app.route('/')
 def inicio():
     return render_template('index.html')
 
+#redirecioamento para cadastro
 @app.route('/cadastro', methods=['GET', 'POST'])
 def cadastro():
     if request.method == 'POST':
@@ -27,7 +31,8 @@ def cadastro():
         phone = request.form['phone']
         password = request.form['password']
 
-        try:
+        try: #tenta conexão com baco
+
             conn = get_db_connection()
             cursor = conn.cursor()
             cursor.execute("""
@@ -40,15 +45,16 @@ def cadastro():
             flash("Usuário criado com sucesso!", "success")
             return redirect(url_for('index'))
         except Exception as e:
-            flash("Erro ao criar usuário.", "danger")
+            flash("Erro ao criar usuário. Nome de usuário pode já existir.", "danger") #mesagem de erro
             print(e)
-    return render_template('cadastro.html')
+    return render_template('cadastro.html') #usuario criado com sucesso
 
+#funçao de login
 @app.route('/login', methods=['POST'])
 def login():
     username = request.form['username']
     password = request.form['password']
-
+    #conexao de login
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT id_user, username FROM users WHERE username=%s AND password=%s", (username, password))
@@ -56,24 +62,41 @@ def login():
     cursor.close()
     conn.close()
 
-    if user:
+    if user: #se conn: TRUE, entra no sistema
         session['user_id'] = user[0]
         session['username'] = user[1]
-        return redirect(url_for('tarefas'))
+        return redirect(url_for('calendario'))
     else:
-        flash("Login inválido!", "danger")
+        flash("Login inválido!", "danger") #mensagem de erro 
         return redirect(url_for('index'))
 
-@app.route('/index')
+#redireciona para login se nao houver conexao
+@app.route('/index') 
 def index():
     if 'user_id' not in session:
         return redirect(url_for('index'))
     return render_template('index.html', username=session['username'])
 
+#rota da pagina que tem informaçoes do usuario
+@app.route('/perfil')
+def perfil():
+    if 'user_id' not in session:
+        return redirect (url_for('index.html'))
+
+#funçao de logout
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('index'))
+
+#rota para o gerenciador de tarefas
+@app.route('/calendario')
+def calendario():
+    if 'user_id' not in session:
+        flash ('sessão encerrada,retornando ao inicio','danger')
+        return render_template('index.html')
+    return render_template('calendario.html')
+
 
 @app.route('/tarefas', methods=['GET'])
 def get_tarefas():
@@ -91,6 +114,7 @@ def get_tarefas():
     conn.close()
 
     return jsonify({hora: texto for hora, texto in tarefas})
+
 
 @app.route('/tarefas', methods=['POST'])
 def post_tarefa():
@@ -116,5 +140,7 @@ def post_tarefa():
 
     return "OK", 200
 
+
+#iniciador do app
 if __name__ == '__main__':
-    app.run(debug=True, host='127.0.0.1', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=5000)
