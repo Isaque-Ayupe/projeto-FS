@@ -120,7 +120,7 @@
       const eventosDoDia = eventos[dateStr] || [];
 
       eventContent.innerHTML = eventosDoDia.length > 0
-        ? eventosDoDia.map(ev => `<p><strong>${ev.nome}</strong> às ${ev.hora}</p>`).join('')
+        ? eventosDoDia.map(ev => `<p><strong>${ev.task}</strong> às ${ev.hour}</p>`).join('')
         : "<p>Não há eventos para este dia.</p>";
 
       eventContent.innerHTML += `
@@ -138,22 +138,22 @@
       const name = document.getElementById('event-name').value.trim();
       const time = document.getElementById('event-time').value;
 
-      if (!name || !time) {
+      if (!task || !hour) {
         alert("Por favor, preencha o nome e a hora do evento.");
         return;
       }
 
-      fetch("/adicionar-evento", {
+      fetch("/post_tarefa", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ data: dateStr, nome: name, hora: time })
+        body: JSON.stringify({ date: dateStr, task: name, hour: time })
       })
       .then(res => res.json())
       .then(res => {
         if (res.mensagem) {
           alert("Evento salvo com sucesso!");
           if (!eventos[dateStr]) eventos[dateStr] = [];
-          eventos[dateStr].push({ nome: name, hora: time });
+          eventos[dateStr].push({ task: name, hour: time });
           showEvents(dateStr);
         } else {
           alert("Erro ao salvar: " + res.erro);
