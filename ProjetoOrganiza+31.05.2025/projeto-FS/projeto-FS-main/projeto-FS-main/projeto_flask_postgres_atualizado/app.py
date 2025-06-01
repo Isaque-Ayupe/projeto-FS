@@ -4,6 +4,7 @@ import pymysql
 app = Flask(__name__)
 app.secret_key = 'segredo_ultra_confidencial'
 
+#conexao do banco de dados
 def get_db_connection():
     return pymysql.connect(
         database="gerenciado_de_tarefas",
@@ -13,11 +14,11 @@ def get_db_connection():
         port=3306,
         cursorclass=pymysql.cursors.Cursor
     )
-
+#rota inicial
 @app.route('/')
-def inicio():
+def entrada():
     return render_template('index.html')
-
+#rota de cadastro
 @app.route('/cadastro', methods=['GET', 'POST'])
 def cadastro():
     if request.method == 'POST':
@@ -27,7 +28,7 @@ def cadastro():
         phone = request.form['phone']
         password = request.form['password']
 
-        try:
+        try: #tenta conexao com banco de dados
             conn = get_db_connection()
             cursor = conn.cursor()
             cursor.execute("""
@@ -37,13 +38,13 @@ def cadastro():
             conn.commit()
             cursor.close()
             conn.close()
-            flash("Usuário criado com sucesso!", "success")
+            flash("Usuário criado com sucesso!", "success")#funcionou
             return redirect(url_for('index'))
         except Exception as e:
-            flash("Erro ao criar usuário. Nome de usuário pode já existir.", "danger")
+            flash("Erro ao criar usuário. Nome de usuário pode já existir.", "danger")#nao funcionou
             print(e)
     return render_template('cadastro.html')
-
+#rota de login
 @app.route('/login', methods=['POST'])
 def login():
     username = request.form['username']
@@ -56,21 +57,23 @@ def login():
     cursor.close()
     conn.close()
 
+    #login com sucesso
     if user:
         session['user_id'] = user[0]
         session['username'] = user[1]
         return redirect(url_for('calendario' \
         '')) 
-    else:
+    #login invalido
+    else: 
         flash("Login inválido!", "danger")
         return redirect(url_for('index'))
-
+#redireciona pro inicio se a sessao bugar
 @app.route('/index')
 def index():
     if 'user_id' not in session:
         return redirect(url_for('index'))
     return render_template('index.html', username=session['username'])
-
+#rota de log_out
 @app.route('/logout')
 def logout():
     session.clear()
@@ -78,7 +81,7 @@ def logout():
 
 #higor: Rota para o inicio apos o login, Já exite uma rota chamada inicio, por isso eu mantive calendario...
 @app.route('/inicio')
-def calendario():
+def inicio():
     if 'user_id' not in session:
         return redirect(url_for('index'))
     return render_template('inicio.html', username=session['username'])
@@ -89,7 +92,7 @@ def calendario_view():
     if 'user_id' not in session:
         return redirect(url_for('index'))
     return render_template('calendario.html', username=session['username'])
-
+#pega os eventos existentes
 @app.route('/calendario', methods=['GET'])
 def get_tarefas():
     if 'user_id' not in session:
@@ -106,7 +109,7 @@ def get_tarefas():
     conn.close()
 
     return jsonify({hora: texto for hora, texto in tarefas})
-
+#adiciona tarefas
 @app.route('/calendario', methods=['POST'])
 def post_tarefa():
     if 'user_id' not in session:
@@ -130,6 +133,6 @@ def post_tarefa():
     conn.close()
 
     return "OK", 200
-
+#inicia o app
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
