@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body id="firtpage">
+  <div class="container">
+    <h1>ORGANIZA+</h1>
+
+    <form action="/login" method="POST">
+      <input type="text" name="username" placeholder="Login" required>
+      <input type="password" name="password" placeholder="Senha" required>
+      <button id="buttonindex" type="submit">Entrar</button>
+    </form>
+    <p>Novo Usuário? <a href="/cadastro">Cadastre-se aqui</a></p>
+  </div>
+
+  <div class="Logopage">
+    <img id="imgindex" src="{{ url_for('static', filename='img/Logo_sem_fundo.png') }}" alt="Logo">
+  </div>
+</body>
+</html>
