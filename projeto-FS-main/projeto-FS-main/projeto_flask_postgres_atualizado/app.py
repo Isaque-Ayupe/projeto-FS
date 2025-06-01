@@ -1,10 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 import pymysql
 
+#cria o app
 app = Flask(__name__)
 app.secret_key = 'segredo_ultra_confidencial'
 
-#conexao do banco de dados
+#conexao com banco de dados
 def get_db_connection():
     return pymysql.connect(
         database="gerenciado_de_tarefas",
@@ -12,13 +13,15 @@ def get_db_connection():
         password="1234",
         host="localhost",
         port=3306,
-        cursorclass=pymysql.cursors.Cursor
+        cursorclass=pymysql.cursors.Cursor # type: ignore
     )
-#rota inicial
+
+#renderiza a tela de login
 @app.route('/')
 def entrada():
     return render_template('index.html')
-#rota de cadastro
+
+#redirecioamento para cadastro
 @app.route('/cadastro', methods=['GET', 'POST'])
 def cadastro():
     if request.method == 'POST':
@@ -28,7 +31,8 @@ def cadastro():
         phone = request.form['phone']
         password = request.form['password']
 
-        try: #tenta conexao com banco de dados
+        try: #tenta conexão com baco
+
             conn = get_db_connection()
             cursor = conn.cursor()
             cursor.execute("""
@@ -38,18 +42,19 @@ def cadastro():
             conn.commit()
             cursor.close()
             conn.close()
-            flash("Usuário criado com sucesso!", "success")#funcionou
+            flash("Usuário criado com sucesso!", "success")
             return redirect(url_for('index'))
         except Exception as e:
-            flash("Erro ao criar usuário. Nome de usuário pode já existir.", "danger")#nao funcionou
+            flash("Erro ao criar usuário. Nome de usuário pode já existir.", "danger") #mesagem de erro
             print(e)
-    return render_template('cadastro.html')
-#rota de login
+    return render_template('cadastro.html') #usuario criado com sucesso
+
+#funçao de login
 @app.route('/login', methods=['POST'])
 def login():
     username = request.form['username']
     password = request.form['password']
-
+    #conexao de login
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT id_user, username FROM users WHERE username=%s AND password=%s", (username, password))
@@ -57,44 +62,85 @@ def login():
     cursor.close()
     conn.close()
 
-    #login com sucesso
-    if user:
+    if user: #se conn: TRUE, entra no sistema
         session['user_id'] = user[0]
         session['username'] = user[1]
-        return redirect(url_for('calendario' \
-        '')) 
-    #login invalido
-    else: 
-        flash("Login inválido!", "danger")
+        return redirect(url_for('calendario'))
+    else:
+        flash("Login inválido!", "danger") #mensagem de erro 
         return redirect(url_for('index'))
-#redireciona pro inicio se a sessao bugar
-@app.route('/index')
+
+#redireciona para login se nao houver conexao
+@app.route('/index') 
 def index():
     if 'user_id' not in session:
         return redirect(url_for('index'))
     return render_template('index.html', username=session['username'])
-#rota de log_out
+
+#rota da pagina que tem informaçoes do usuario
+@app.route('/usuario', method=['GET'])
+def user_view():
+    #variaveis do banco
+    username= request.form['username']
+    birthdate= request.form['birthdate']
+    email= request.form['email']
+    phone= request.form['phone']
+
+    #conexao com o banco
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id_user, username FROM users WHERE username=%s AND birthdate=%s AND email=%s AND phone=%s" , (username,birthdate,email,phone))
+    cursor.close()
+    conn.close()
+
+    #redirecionamento para:
+    if 'user_id' not in session:
+        return redirect(url_for('index.html')) #login se sessao nao existe
+    return render_template(url_for('usuario.html'))#aba de usuario
+
+
+
+#funçao para edição das informações do usuario no banco de dados
+@app.route('/usario', method=['POST'])
+def user_edit():
+    if 'user_id' not in session:
+        return "Unauthorized", 401
+    username= request.form['username']
+    birthdate= request.form['birthdate']
+    email= request.form['email']
+    phone= request.form['phone']
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        INSERT INTO users (username, birthdate, email, phone)
+        VALUES (%s, %s, %s, %s)
+        ON DUPLICATE KEY UPDATE users = VALUES(user)
+    """, (username, birthdate, email, phone))  
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+    return "requisição bem sucedida", 200 #edição realizada com sucesso
+
+
+#funçao de logout
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('index'))
 
-#higor: Rota para o inicio apos o login, Já exite uma rota chamada inicio, por isso eu mantive calendario...
-@app.route('/inicio')
-def inicio():
-    if 'user_id' not in session:
-        return redirect(url_for('index'))
-    return render_template('inicio.html', username=session['username'])
-
-#higor: Adicionei esta rota para o calendario...
+#rota para o gerenciador de tarefas
 @app.route('/calendario')
 def calendario_view():
     if 'user_id' not in session:
-        return redirect(url_for('index'))
-    return render_template('calendario.html', username=session['username'])
-#pega os eventos existentes
-@app.route('/calendario', methods=['GET'])
-def get_tarefas():
+        flash ('sessão encerrada,retornando ao inicio','danger')
+        return render_template('index.html')
+    return render_template('calendario.html')
+
+#rota que busca as tasks ja existentes
+@app.route('/caledario', methods=['GET'])
+def get_task():
     if 'user_id' not in session:
         return jsonify([])
 
@@ -104,14 +150,15 @@ def get_tarefas():
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT hour, task FROM tasks WHERE id_user=%s AND date=%s", (user_id, date))
-    tarefas = cursor.fetchall()
+    tasks = cursor.fetchall()
     cursor.close()
     conn.close()
 
-    return jsonify({hora: texto for hora, texto in tarefas})
-#adiciona tarefas
-@app.route('/calendario', methods=['POST'])
-def post_tarefa():
+    return jsonify({hora: texto for hora, texto in tasks})
+
+#funçao para adicionar tasks
+@app.route('/calendiario', methods=['POST'])
+def post_task():
     if 'user_id' not in session:
         return "Unauthorized", 401
 
@@ -133,11 +180,9 @@ def post_tarefa():
     conn.close()
 
     return "OK", 200
-#inicia o app
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
 
 
 #iniciador do app
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
+
