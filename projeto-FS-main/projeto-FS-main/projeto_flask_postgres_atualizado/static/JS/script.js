@@ -1,4 +1,3 @@
-
 document.getElementById('open_btn').addEventListener('click', function () {
     document.getElementById('sidebar').classList.toggle('open-sidebar');
 });
@@ -32,6 +31,7 @@ document.getElementById('open_btn').addEventListener('click', function () {
           let cell = document.createElement('td');
           cell.setAttribute("style", "padding: 20px 0; border: 1px solid #ddd; cursor: pointer; font-size: 1.1em;");
 
+
           if (i === 0 && j < firstDay) {
             cell.textContent = '';
           } else if (dateCount > daysInMonth) {
@@ -53,9 +53,13 @@ document.getElementById('open_btn').addEventListener('click', function () {
             }
 
             cell.addEventListener("click", function () {
+              // Remover seleção anterior
               const allCells = document.querySelectorAll('td');
               allCells.forEach(c => c.classList.remove('selected-day'));
+
+              // Adicionar classe de destaque
               cell.classList.add('selected-day');
+
               showEvents(fullDate);
             });
 
@@ -72,7 +76,7 @@ document.getElementById('open_btn').addEventListener('click', function () {
       const eventosDoDia = eventos[dateStr] || [];
 
       eventContent.innerHTML = eventosDoDia.length > 0
-        ? eventosDoDia.map(ev => `<p><strong>${ev.nome}</strong> às ${ev.hora}</p>`).join('')
+        ? eventosDoDia.map(ev => `<p><strong>${ev.task}</strong> às ${ev.hour}</p>`).join('')
         : "<p>Não há eventos para este dia.</p>";
 
       eventContent.innerHTML += `
@@ -90,22 +94,22 @@ document.getElementById('open_btn').addEventListener('click', function () {
       const name = document.getElementById('event-name').value.trim();
       const time = document.getElementById('event-time').value;
 
-      if (!name || !time) {
+      if (!task || !hour) {
         alert("Por favor, preencha o nome e a hora do evento.");
         return;
       }
 
-      fetch("/adicionar-evento", {
+      fetch("/post_tarefa", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ data: dateStr, nome: name, hora: time })
+        body: JSON.stringify({ date: dateStr, task: name, hour: time })
       })
       .then(res => res.json())
       .then(res => {
         if (res.mensagem) {
           alert("Evento salvo com sucesso!");
           if (!eventos[dateStr]) eventos[dateStr] = [];
-          eventos[dateStr].push({ nome: name, hora: time });
+          eventos[dateStr].push({ task: name, hour: time });
           showEvents(dateStr);
         } else {
           alert("Erro ao salvar: " + res.erro);
@@ -124,3 +128,4 @@ document.getElementById('open_btn').addEventListener('click', function () {
     }
 
     generateCalendar(currentDate);
+
