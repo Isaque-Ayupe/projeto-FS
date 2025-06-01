@@ -1,27 +1,31 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <title>Login</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='static\style.css') }}">
+
 </head>
-<body>
+
+<body id="firtpage">
+
+    
+   <div class="Logopage">
+    <img id="imgindex" src="{{ url_for('static', filename='static\Logo_sem_fundo.png') }}" alt="Logo">
+
+  </div>
   <div class="container">
-    <h1>BEM-VINDO</h1>
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% if messages %}
-        {% for category, message in messages %}
-          <div class="flash {{ category }}">{{ message }}</div>
-        {% endfor %}
-      {% endif %}
-    {% endwith %}
+    <h1>ORGANIZA+</h1>
+
     <form action="/login" method="POST">
-      <input type="text" name="username" placeholder="Login" required>
-      <input type="password" name="password" placeholder="Senha" required>
-      <button type="submit">Entrar</button>
+      <input type="varchar(50)" name="username" placeholder="Login" required>
+      <input type="varchar(255)" name="password" placeholder="Senha" required>
+      <button id="buttonindex" type="submit">Entrar</button>
     </form>
     <p>Novo Usuário? <a href="/cadastro">Cadastre-se aqui</a></p>
   </div>
+
 </body>
+
 </html>
