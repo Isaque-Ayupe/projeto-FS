@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-
+<!--botao da sidebar-->
 <body>
   <nav id="sidebar">
     <div id="sidebar_content">
@@ -17,13 +17,10 @@
         <p id="user_infos">
           <span class="item-description">
             Fulano de Tal
-          </span>
-          <span class="item-description">
-            Lorem Ipsum
-          </span>
         </p>
       </div>
 
+      <!--botao que manda para o dashboard-->
       <ul id="side_items">
         <li class="side-item active"> 
           <!--fiz esta alteração: Ela dá o caminho certo para a rota no python-->
@@ -35,9 +32,9 @@
         </a>
     </li>
 
-
+        <!--botao para redirecionar para aba de usuarios-->
         <li class="side-item">
-          <a href="#">
+          <a href="{{ url_for('user_view') }}">
             <i class="fa-solid fa-user"></i>
             <span class="item-description">
               Usuários
@@ -45,67 +42,28 @@
           </a>
         </li>
 
-        <li class="side-item">
-          <a href="#">
-            <i class="fa-solid fa-bell"></i>
-            <span class="item-description">
-              Notificações (Breve)
-            </span>
-          </a>
-        </li>
+        <!--botao de logout-->
+        <form action="logout" method="post">
+          <button id="logout_btn" type="submit">
+            <i class="fa-solid fa-right-from-bracket"></i>
+              <span class="item-description">Logout</span>
+          </button>
+        </form> 
 
-        <li class="side-item">
-          <a href="#">
-            <i class="fa-solid fa-box"></i>
-            <span class="item-description">
-              Produtos
-            </span>
-          </a>
-        </li>
-
-        <li class="side-item">
-          <a href="#">
-            <i class="fa-solid fa-image"></i>
-            <span class="item-description">
-              Imagens
-            </span>
-          </a>
-        </li>
-
-        <li class="side-item">
-          <a href="#">
-            <i class="fa-solid fa-gear"></i>
-            <span class="item-description">
-              Configurações
-            </span>
-          </a>
-        </li>
-      </ul>
 
       <button id="open_btn">
         <i id="open_btn_icon" class="fa-solid fa-chevron-right"></i>
       </button>
+       
     </div>
-
-    <div id="logout">
-      <button id="logout_btn">
-        <i class="fa-solid fa-right-from-bracket"></i>
-        <span class="item-description">
-          Logout
-        </span>
-      </button>
-    </div>
+  
   </nav>
 
   <main>
     <h1>Título</h1>
   </main>
 
-  <script>
-  document.getElementById('open_btn').addEventListener('click', function () {
-    document.getElementById('sidebar').classList.toggle('open-sidebar');
-});
-</script>
+
 </body>
 
 
