@@ -172,27 +172,127 @@ main {
 }
 
 
-#imgindex{
-  height: 500px;
-  position: absolute;
-  top: 0.5%;
-  transform: translatey(-50%);
-  left: 50%;
-  transform: translatex(-20%);
+#firtpage {
+  background-color: #5a4fff;
+  height: 100vh;
+  margin: 0;
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
 }
 
-#firtpage{
-  background-color: #4f46e5;
+.logo-topo {
+  position: absolute;
+  top: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
+
+#imgindex {
+  height: 300px; /* Logo maior */
+}
+
 .container {
-    
-  background-color: rgb(255, 255, 255);
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0px 0px 15px rgba(0,0,0,0.1);
-  width: 300px;
+  background-color: white;
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
   text-align: center;
 }
+
+/* hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh */
+/* === ESTILO PARA A PÁGINA DE CADASTRO COM BACKGROUND ROXO === */
+body#cadastro-body {
+  background-color: #5a4fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+}
+
+/* Caixa branca central */
+.cadastro-box {
+  background-color: white;
+  padding: 40px 32px;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  width: 100%;
+  max-width: 380px;
+  text-align: center;
+}
+
+/* Título */
+.cadastro-box h1 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 24px;
+  color: #111;
+}
+
+/* Campos de entrada */
+.cadastro-box input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-bottom: 12px;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.cadastro-box input:focus {
+  outline: none;
+  border-color: #5a4fff;
+  box-shadow: 0 0 0 2px rgba(90, 79, 255, 0.2);
+}
+
+/* Botão */
+.cadastro-box button {
+  width: 100%;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 12px;
+  font-weight: bold;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.cadastro-box button:hover {
+  background-color: #0056b3;
+}
+
+/* Estilo de alertas */
+.flash {
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.flash.success {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.flash.danger {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+
+
+
+/*hhhhhhhhhh*/
+
+
 
 .container, .calendar {
   background-color: rgb(255, 255, 255);

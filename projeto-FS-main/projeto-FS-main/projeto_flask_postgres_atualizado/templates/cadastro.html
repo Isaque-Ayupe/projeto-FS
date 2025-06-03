@@ -1,14 +1,15 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <title>Cadastro</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
-<body>
-  <div class="container">
-    <h1>Novo Usuário</h1>
+<body id="cadastro-body">
+  <div class="cadastro-box">
+    <h1>NOVO USUÁRIO</h1>
+
+    <!-- Mensagens de alerta (flashes) -->
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         {% for category, message in messages %}
@@ -16,6 +17,8 @@
         {% endfor %}
       {% endif %}
     {% endwith %}
+
+    <!-- Formulário de cadastro -->
     <form method="POST">
       <input type="text" name="username" placeholder="Nome de usuário" required>
       <input type="date" name="birthdate" required>
