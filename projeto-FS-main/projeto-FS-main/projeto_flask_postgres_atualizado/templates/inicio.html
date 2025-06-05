@@ -17,16 +17,15 @@
     <nav id="sidebar">
       <div id="sidebar_content">
 
-        <!-- Informações do usuário -->
         <div id="user">
           <img src="/static/img/perfil-projeto.jpg" id="user_avatar" alt="Foto do usuário">
           <p id="user_infos">
-            <span class="item-description">User</span>
+            <span class="item-description">{{ username }}</span>
             <span class="item-description">Admin</span>
           </p>
         </div>
 
-        <!-- Itens de navegação -->
+ 
         <ul id="side_items">
           <li class="side-item active">
             <a href="{{ url_for('calendario_view') }}">
@@ -51,18 +50,18 @@
         </ul>
         </div>
 
-        <!-- Botão de expandir/retrair menu -->
         <button id="open_btn" aria-label="Expandir ou retrair menu">
           <i id="open_btn_icon" class="fa-solid fa-chevron-right"></i>
         </button>
 
-        <!-- Botão de logout -->
-        <form action="logout" method="post">
+
+        <!--botao de logout-->
+        <form action="/logout" method="post">
           <button id="logout_btn" type="submit">
             <i class="fa-solid fa-right-from-bracket"></i>
-            <span class="item-description">Logout</span>
+              <span class="item-description">Logout</span>
           </button>
-        </form>
+        </form> 
 
       </div>
     </nav>
@@ -72,7 +71,6 @@
     <h1>Organiza+</h1>
   </main>
 
-  <!-- JS -->
   <script src="/static/JS/script.js"></script>
 </body>
 

@@ -45,69 +45,83 @@
   </div>
   
 <script>
+  // Pega elementos importantes do HTML para manipular depois
   const monthYear = document.getElementById('month-year');
   const calendarBody = document.getElementById('calendar-body');
   const modal = document.getElementById('event-modal');
   const eventContent = document.getElementById('event-content');
 
+  // Lista dos meses para mostrar no calendário
   const months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
                   'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
 
-  let currentDate = new Date();
-  const eventos = {};
+  let currentDate = new Date(); // Data atual para controlar o mês exibido
+  const eventos = {}; // Objeto onde guardamos os eventos por data
 
+  // Função que busca os eventos do mês e monta o calendário
   function generateCalendar(date) {
     const year = date.getFullYear();
     const month = date.getMonth();
 
+    // Pega os eventos do servidor para o ano e mês atuais
     fetch(`/carregar_eventos?ano=${year}&mes=${month + 1}`)
       .then(res => res.json())
       .then(data => {
+        // Limpa os eventos antigos antes de adicionar os novos
         Object.keys(eventos).forEach(k => delete eventos[k]);
 
+        // Organiza os eventos recebidos no objeto, agrupando por data
         data.forEach(ev => {
           if (!eventos[ev.date]) eventos[ev.date] = [];
           eventos[ev.date].push({ task: ev.task, hour: ev.hour });
         });
 
-        renderCalendarBody(date);
+        renderCalendarBody(date); // Atualiza o calendário visualmente
       })
       .catch(err => {
-        console.error("Erro ao carregar eventos:", err);
+        console.error("Erro ao carregar eventos:", err); // Mostra erro no console
       });
   }
 
+  // Função que monta as células do calendário com os dias e eventos
   function renderCalendarBody(date) {
     const year = date.getFullYear();
     const month = date.getMonth();
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDay = new Date(year, month, 1).getDay(); // Dia da semana do 1º dia do mês
+    const daysInMonth = new Date(year, month + 1, 0).getDate(); // Quantos dias tem o mês
 
-    monthYear.textContent = `${months[month]} ${year}`;
-    calendarBody.innerHTML = '';
+    monthYear.textContent = `${months[month]} ${year}`; // Exibe mês e ano no topo
+    calendarBody.innerHTML = ''; // Limpa o calendário para montar de novo
 
-    let dateCount = 1;
-    for (let i = 0; i < 6; i++) {
+    let dateCount = 1; // Contador para os dias do mês
+    for (let i = 0; i < 6; i++) { // Até 6 linhas (semanas)
       let row = document.createElement('tr');
 
-      for (let j = 0; j < 7; j++) {
+      for (let j = 0; j < 7; j++) { // 7 colunas (dias da semana)
         let cell = document.createElement('td');
+        // Estilo básico para as células
         cell.setAttribute("style", "padding: 20px 0; border: 1px solid #ddd; cursor: pointer; font-size: 1.1em;");
 
         if (i === 0 && j < firstDay) {
+          // Células vazias antes do 1º dia do mês
           cell.textContent = '';
         } else if (dateCount > daysInMonth) {
+          // Se passou o último dia do mês, para de criar células
           break;
         } else {
+          // Formata a data completa no padrão YYYY-MM-DD para usar como chave
           const fullDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(dateCount).padStart(2, '0')}`;
           cell.setAttribute("data-date", fullDate);
           cell.textContent = dateCount;
+
+          // Se tem evento nesse dia, muda a cor e adiciona dica com os eventos
           if (eventos[fullDate]) {
-          cell.style.backgroundColor = "#f3e8ff"; // Cor de fundo lilás
-          cell.style.borderRadius = "8px";
-          cell.title = eventos[fullDate].map(ev => `${ev.task} às ${ev.hour}`).join('\n'); // Dica ao passar o mouse
+            cell.style.backgroundColor = "#f3e8ff"; // lilás
+            cell.style.borderRadius = "8px";
+            cell.title = eventos[fullDate].map(ev => `${ev.task} às ${ev.hour}`).join('\n');
           }
 
+          // Destaca o dia atual no calendário
           const today = new Date();
           if (
             dateCount === today.getDate() &&
@@ -119,6 +133,7 @@
             cell.style.fontWeight = "bold";
           }
 
+          // Quando clicar no dia, mostra os eventos e marca o dia como selecionado
           cell.addEventListener("click", function () {
             document.querySelectorAll('td').forEach(c => c.classList.remove('selected-day'));
             cell.classList.add('selected-day');
@@ -129,11 +144,11 @@
         }
         row.appendChild(cell);
       }
-
       calendarBody.appendChild(row);
     }
   }
 
+  // Mostra os eventos do dia e formulário para adicionar novo evento
   function showEvents(dateStr) {
     const eventosDoDia = eventos[dateStr] || [];
 
@@ -141,6 +156,7 @@
       ? eventosDoDia.map(ev => `<p><strong>${ev.task}</strong> às ${ev.hour}</p>`).join('')
       : "<p>Não há eventos para este dia.</p>";
 
+    // Formulário simples para adicionar evento no dia
     eventContent.innerHTML += `
       <hr style="margin: 10px 0;">
       <h4 style="margin-bottom: 6px;">Adicionar Evento:</h4>
@@ -149,9 +165,10 @@
       <button onclick="saveEvent('${dateStr}')" style="background: #8c52ff; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer;">Salvar Evento</button>
     `;
 
-    modal.style.display = "flex";
+    modal.style.display = "flex"; // Abre o modal para mostrar eventos e formulário
   }
 
+  // Salva um evento novo enviando para o servidor
   function saveEvent(dateStr) {
     const name = document.getElementById('event-name').value.trim();
     const time = document.getElementById('event-time').value;
@@ -161,6 +178,7 @@
       return;
     }
 
+    // Envia o evento para o backend via POST em JSON
     fetch("/calendario", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -169,9 +187,10 @@
     .then(res => {
       if (res.ok) {
         alert("Evento salvo com sucesso!");
+        // Atualiza o objeto local para o evento aparecer imediatamente
         if (!eventos[dateStr]) eventos[dateStr] = [];
         eventos[dateStr].push({ task: name, hour: time });
-        showEvents(dateStr);
+        showEvents(dateStr); // Atualiza a lista na tela
       } else {
         res.text().then(msg => alert("Erro ao salvar: " + msg));
       }
@@ -179,18 +198,22 @@
     .catch(err => alert("Erro de conexão com o servidor."));
   }
 
+  // Fecha o modal de eventos
   function closeModal() {
     modal.style.display = "none";
   }
 
+  // Muda o mês exibido no calendário (avanço ou retrocesso)
   function changeMonth(offset) {
     currentDate.setMonth(currentDate.getMonth() + offset);
     generateCalendar(currentDate);
   }
 
+  // Inicializa o calendário na data atual
   generateCalendar(currentDate);
   
 </script>
+
 
 </body>
 </html>
