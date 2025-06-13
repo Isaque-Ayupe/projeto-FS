@@ -64,6 +64,7 @@ Projeto desenvolvido como parte de um trabalho acadêmico de Engenharia de Softw
 
 ## 💡 Feito por
 
-Desenvolvido por **Isaque** como parte do curso de Engenharia de Software.  
-Namorando com a Ana Clara desde 08/01 ❤️  
-Idade: 19 | Altura: 1,90m
+Isaque Ayupe
+Higor Resende
+Joao victor
+Pedro mendonça
